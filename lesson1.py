@@ -39,6 +39,20 @@ session.viewports['Viewport: 1'].view.setValues(nearPlane=294.031,
     viewOffsetY=4.40983)
 mdb.save()
 
+#segmentation
+
+p = mdb.models['Model-1'].parts['siding']
+f = p.faces
+pickedFaces = f.getSequenceFromMask(mask=('[#1 ]', ), )
+v1, e, d1 = p.vertices, p.edges, p.datums
+p.PartitionFaceByShortestPath(faces=pickedFaces, point1=p.IntersetingPoint(
+    edge=e[0], rule=MIDDLE), point2=p.IntersetingPoint(edge=e[2], rule=MIDDLE))
+
+
+
+
+
+#create material
 session.viewports['Viewport: 1'].partDisplay.setValues(sectionAssignments=ON,
     engineeringFeatures=ON)
 session.viewports['Viewport: 1'].partDisplay.geometryOptions.setValues(
@@ -128,8 +142,8 @@ session.viewports['Viewport: 1'].assemblyDisplay.setValues(loads=ON, bcs=ON,
 mdb.save()
 
 elemType = mesh.ElemType(elemCode=C3D8R, elemLibrary=STANDARD,
-                          kinematicSplit=AVERAGE_STRAIN, secondOrderAccuracy=OFF,
-                            hourglassControl=DEFAULT, distortionControl=DEFAULT)
+                        kinematicSplit=AVERAGE_STRAIN, secondOrderAccuracy=OFF,
+                        hourglassControl=DEFAULT, distortionControl=DEFAULT)
 p.seedPart(size=1.0, deviationFactor=0.1, minSizeFactor=0.1)
 c = p.cells
 p.setElementType(regions=(c,), elemTypes=(elemType,))
