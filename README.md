@@ -1,2 +1,3 @@
 # Abaqus_pycharm
 安装pyabaqus包
+实现pychram进行abaqus开发
