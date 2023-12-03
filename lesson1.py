@@ -48,8 +48,49 @@ v1, e, d1 = p.vertices, p.edges, p.datums
 p.PartitionFaceByShortestPath(faces=pickedFaces, point1=p.IntersetingPoint(
     edge=e[0], rule=MIDDLE), point2=p.IntersetingPoint(edge=e[2], rule=MIDDLE))
 
+a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=ZAXIS)
+aid = a.id
+
+for i in range (1,160):
+    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(0.0, 0.0, 0.5 * i))  # 以坐标的方式创建参考点们
+    did = d.id  # 参考点的id号
+    p = mdb.models['Model-1'].parts['soil'].DatumPlaneByPointNormal(
+        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
+        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+    pid = p.id  # 参考平面的id号
+    mdb.models['Model-1'].parts['soil'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
+                                                                  datumPlane=mdb.models['Model-1'].parts['siding'].datums[
+                                                                  pid])
 
 
+#切割YZ平面
+a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=XAXIS)
+aid = a.id
+
+for i in range (1,300):
+    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-75 + 0.5 * i, 0.0, 0.0))  # 以坐标的方式创建参考点们
+    did = d.id  # 参考点的id号
+    p = mdb.models['Model-1'].parts['soil'].DatumPlaneByPointNormal(
+        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
+        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+    pid = p.id  # 参考平面的id号
+    mdb.models['Model-1'].parts['soil'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
+                                                                  datumPlane=mdb.models['Model-1'].parts['siding'].datums[
+                                                                  pid])
+
+#切割XZ平面
+a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=YAXIS)
+aid = a.id
+for i in range (1,14):
+    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(0.0, -4+0.5*i, 0.5 * i))  # 以坐标的方式创建参考点们
+    did = d.id  # 参考点的id号
+    p = mdb.models['Model-1'].parts['soil'].DatumPlaneByPointNormal(
+        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
+        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+    pid = p.id  # 参考平面的id号
+    mdb.models['Model-1'].parts['soil'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
+                                                                  datumPlane=mdb.models['Model-1'].parts['siding'].datums[
+                                                                  pid])
 
 
 #create material
