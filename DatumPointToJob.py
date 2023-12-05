@@ -4,6 +4,7 @@ import math
 
 
 
+mdb = Mdb(pathName='E:\FEM\Abaqus\2023-12-4\lesson1.cae')
 
 pt1 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-300.5, -1, 100.5))
 pt2 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(300.5, -1, 100.5))
@@ -97,56 +98,56 @@ session.viewports['Viewport: 1'].assemblyDisplay.setValues(loads=ON, bcs=ON,
 #create boundary conditions
 a = mdb.models['Model-1'].rootAssembly
 region1 = a.sets['Set-1']
-up1 = pt1.xValue-verts1[index1].pointOn[0][0]
-up2 = pt1.yValue-verts1[index1].pointOn[0][1]
-up3 = pt1.zValue-verts1[index1].pointOn[0][2]
+u1p1 = pt1.xValue-verts1[index1].pointOn[0][0]
+u2p1 = pt1.yValue-verts1[index1].pointOn[0][1]
+u3p1 = pt1.zValue-verts1[index1].pointOn[0][2]
 mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='Step-1',
-    region=region1, u1=up1, u2=up2, u3=up3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+    region=region1, u1=u1p1, u2=u2p1, u3=u3p1, ur1=UNSET, ur2=UNSET, ur3=UNSET,
     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 a = mdb.models['Model-1'].rootAssembly
 region2 = a.sets['Set-2']
-up1 = pt2.xValue-verts2[index2].pointOn[0][0]
-up2 = pt2.yValue-verts2[index2].pointOn[0][1]
-up3 = pt2.zValue-verts2[index2].pointOn[0][2]
+u1p2 = pt2.xValue-verts2[index2].pointOn[0][0]
+u2p2 = pt2.yValue-verts2[index2].pointOn[0][1]
+u3p2 = pt2.zValue-verts2[index2].pointOn[0][2]
 mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='Step-1',
-    region=region2, u1=up1, u2=up2, u3=up3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+    region=region2, u1=u1p2, u2=u2p2, u3=u3p2, ur1=UNSET, ur2=UNSET, ur3=UNSET,
     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 a = mdb.models['Model-1'].rootAssembly
 region3 = a.sets['Set-3']
-up1 = pt3.xValue-verts3[index3].pointOn[0][0]
-up2 = pt3.yValue-verts3[index3].pointOn[0][1]
-up3 = pt3.zValue-verts3[index3].pointOn[0][2]
+u1p3 = pt3.xValue-verts3[index3].pointOn[0][0]
+u2p3 = pt3.yValue-verts3[index3].pointOn[0][1]
+u3p3 = pt3.zValue-verts3[index3].pointOn[0][2]
 mdb.models['Model-1'].DisplacementBC(name='BC-3', createStepName='Step-1',
-    region=region3, u1=up1, u2=up2, u3=up3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+    region=region3, u1=u1p3, u2=u2p3, u3=u3p3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 a = mdb.models['Model-1'].rootAssembly
 region4 = a.sets['Set-4']
-up1 = pt4.xValue-verts4[index4].pointOn[0][0]
-up2 = pt4.yValue-verts4[index4].pointOn[0][1]
-up3 = pt4.zValue-verts4[index4].pointOn[0][2]
+u1p4 = pt4.xValue-verts4[index4].pointOn[0][0]
+u2p4 = pt4.yValue-verts4[index4].pointOn[0][1]
+u3p4 = pt4.zValue-verts4[index4].pointOn[0][2]
 mdb.models['Model-1'].DisplacementBC(name='BC-4', createStepName='Step-1',
-    region=region4, u1=up1, u2=up2, u3=up3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+    region=region4, u1=u1p4, u2=u2p4, u3=u3p4, ur1=UNSET, ur2=UNSET, ur3=UNSET,
     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 a = mdb.models['Model-1'].rootAssembly
 region5 = a.sets['Set-5']
-up1 = pt5.xValue-verts5[index5].pointOn[0][0]
-up2 = pt5.yValue-verts5[index5].pointOn[0][1]
-up3 = pt5.zValue-verts5[index5].pointOn[0][2]
+u1p5 = pt5.xValue-verts5[index5].pointOn[0][0]
+u2p5 = pt5.yValue-verts5[index5].pointOn[0][1]
+u3p5 = pt5.zValue-verts5[index5].pointOn[0][2]
 mdb.models['Model-1'].DisplacementBC(name='BC-5', createStepName='Step-1',
-    region=region5, u1=up1, u2=up2, u3=up3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+    region=region5, u1=u1p5, u2=u2p5, u3=u3p5, ur1=UNSET, ur2=UNSET, ur3=UNSET,
     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 a = mdb.models['Model-1'].rootAssembly
 region6 = a.sets['Set-6']
-up1 = pt6.xValue-verts6[index6].pointOn[0][0]
-up2 = pt6.yValue-verts6[index6].pointOn[0][1]
-up3 = pt6.zValue-verts6[index6].pointOn[0][2]
+u1p6 = pt6.xValue-verts6[index6].pointOn[0][0]
+u2p6 = pt6.yValue-verts6[index6].pointOn[0][1]
+u3p6 = pt6.zValue-verts6[index6].pointOn[0][2]
 mdb.models['Model-1'].DisplacementBC(name='BC-6', createStepName='Step-1',
-    region=region6, u1=up1, u2=up2, u3=up3, ur1=UNSET, ur2=UNSET, ur3=UNSET,
+    region=region6, u1=u1p6, u2=u2p6, u3=u3p6, ur1=UNSET, ur2=UNSET, ur3=UNSET,
     amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 #create mesh
