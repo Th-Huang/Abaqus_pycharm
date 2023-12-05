@@ -37,38 +37,57 @@ p = mdb.models['Model-1'].parts['siding']
 p.BaseSolidExtrude(sketch=s,depth=400.0)
 mdb.save()
 
+pt1 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-300.5, -1, 100.5))
+pt2 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(300.5, -1, 100.5))
+pt3 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-300.5,-1, 290.5))
+pt4 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(300.5, -1, 290.5))
+pt5 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(1.5, 28, 190.5))
+pt6 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-1.5,28, 210.5)) # 以坐标的方式创建参考点们
+
+datumpoint = []
+datumpoint.append(pt1)
+datumpoint.append(pt2)
+datumpoint.append(pt3)
+datumpoint.append(pt4)
+datumpoint.append(pt5)
+datumpoint.append(pt6)
+
+for i in range(0,6):
+    a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=XAXIS)
+    aid = a.id
+    for j in range(1, 10):
+        d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(datumpoint[i].xValue-5+i,datumpoint[i].yValue, datumpoint[i].zValue))  # 以坐标的方式创建参考点们
+        did = d.id  # 参考点的id号
+        p = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
+            normal=mdb.models['Model-1'].parts['siding'].datums[aid],
+            point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+        pid = p.id  # 参考平面的id号
+        mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(
+            cells=mdb.models['Model-1'].parts['siding'].cells[:],
+            datumPlane=mdb.models['Model-1'].parts['siding'].datums[
+                pid])
+        if (i % 10 == 0):
+            print("point:", j , "  segmentByXAxis:", i)
+
+    # 按照XY平面切割
+    a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=ZAXIS)
+    aid = a.id
+    for i in range(1, 10):
+        d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(datumpoint[i].xValue-5+i,datumpoint[i].yValue, datumpoint[i].zValue-5+i)  # 以坐标的方式创建参考点们
+        did = d.id  # 参考点的id号
+        p = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
+            normal=mdb.models['Model-1'].parts['siding'].datums[aid],
+            point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+        pid = p.id  # 参考平面的id号
+        mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(
+            cells=mdb.models['Model-1'].parts['siding'].cells[:],
+            datumPlane=mdb.models['Model-1'].parts['siding'].datums[
+                pid])
+        if (i % 10 == 0):
+            print("point: ", j, "  SegmentByZAxis: ", i)
+
 #Segmentation
 #按照YZ平面切割
-a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=XAXIS)
-aid = a.id
-for i in range (1,1000):
-    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-500 + i, 0.0, 0.0))  # 以坐标的方式创建参考点们
-    did = d.id  # 参考点的id号
-    p = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
-        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
-        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
-    pid = p.id  # 参考平面的id号
-    mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
-                                                                    datumPlane=mdb.models['Model-1'].parts['siding'].datums[
-                                                                    pid])
-    if(i%100==0):
-        print("segmentByXAxis:", i)
-
-#按照XY平面切割
-a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=ZAXIS)
-aid = a.id
-for i in range (1,400):
-    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(0.0, 0.0, i))  # 以坐标的方式创建参考点们
-    did = d.id  # 参考点的id号
-    p = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
-        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
-        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
-    pid = p.id  # 参考平面的id号
-    mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
-                                                                    datumPlane=mdb.models['Model-1'].parts['siding'].datums[
-                                                                    pid])
-    if(i%100==0):
-        print("SegmentByZAxis:", i)
 
 
 #create material
