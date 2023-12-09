@@ -1,3 +1,5 @@
+import random
+
 from abaqus import *
 from abaqusConstants import *
 import math
@@ -16,7 +18,7 @@ session.viewports['Viewport:1'].partDisplay.geometryOptions.setValues(
     referenceRepresentation=ON)
 import os
 os.chdir(r"E:\FEM\Abaqus\2023-12-5")
-mdb.saveAs(pathName=r'E:\FEM\Abaqus\2023-12-4\lesson1.cae')
+mdb.saveAs(pathName=r'E:\FEM\Abaqus\2023-12-5\lesson1.cae')
 
 # draw a sketch
 s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__',
@@ -37,39 +39,57 @@ p = mdb.models['Model-1'].parts['siding']
 p.BaseSolidExtrude(sketch=s,depth=400.0)
 mdb.save()
 
-#Segmentation
-#按照YZ平面切割
-a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=XAXIS)
-aid = a.id
-for i in range (1,1000):
-    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-500 + i, 0.0, 0.0))  # 以坐标的方式创建参考点们
-    did = d.id  # 参考点的id号
-    p = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
-        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
-        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
-    pid = p.id  # 参考平面的id号
-    mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
-                                                                    datumPlane=mdb.models['Model-1'].parts['siding'].datums[
-                                                                    pid])
-    if(i%100==0):
-        print("segmentByXAxis:", i)
+#六个参考点的初始坐标
+pt1 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(200.5, 19, 100.5))
+pt2 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-200.5, 18.7, 100.5))
+pt3 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-300.5,13.7, 300.5))
+pt4 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(300.5, 14.3, 300.5))
+pt5 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-100, 22.5, 200.5))
+pt6 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(100,22.3, 200.5)) # 以坐标的方式创建参考点们
 
-#按照XY平面切割
-a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=ZAXIS)
-aid = a.id
-for i in range (1,400):
-    d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(0.0, 0.0, i))  # 以坐标的方式创建参考点们
-    did = d.id  # 参考点的id号
-    p = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
-        normal=mdb.models['Model-1'].parts['siding'].datums[aid],
-        point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
-    pid = p.id  # 参考平面的id号
-    mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(cells=mdb.models['Model-1'].parts['siding'].cells[:],
-                                                                    datumPlane=mdb.models['Model-1'].parts['siding'].datums[
-                                                                    pid])
-    if(i%100==0):
-        print("SegmentByZAxis:", i)
+datumpoint = []
+datumpoint.append(pt1)
+datumpoint.append(pt2)
+datumpoint.append(pt3)
+datumpoint.append(pt4)
+datumpoint.append(pt5)
+datumpoint.append(pt6)
 
+for i in range(0,6):
+    # 按照YZ平面切割
+    a = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=XAXIS)
+    aid = a.id
+    for j in range(0, 15):
+        d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(math.floor(datumpoint[i].xValue-8+j),math.floor(datumpoint[i].yValue), math.floor(datumpoint[i].zValue)))  # 以坐标的方式创建参考点们
+        did = d.id  # 参考点的id号
+        px = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
+            normal=mdb.models['Model-1'].parts['siding'].datums[aid],
+            point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+        pxid = px.id  # 参考平面的id号
+        try:
+            mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(
+            cells=mdb.models['Model-1'].parts['siding'].cells[:],
+            datumPlane=mdb.models['Model-1'].parts['siding'].datums[pxid])
+        except:
+            continue
+
+    # 按照XY平面切割
+    b = mdb.models['Model-1'].parts['siding'].DatumAxisByPrincipalAxis(principalAxis=ZAXIS)
+    bid = b.id
+    for j in range(0, 15):
+        d = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(math.floor(datumpoint[i].xValue),math.floor(datumpoint[i].yValue), math.floor(datumpoint[i].zValue-8+j)))  # 以坐标的方式创建参考点们
+        did = d.id  # 参考点的id号
+        pz = mdb.models['Model-1'].parts['siding'].DatumPlaneByPointNormal(
+            normal=mdb.models['Model-1'].parts['siding'].datums[bid],
+            point=mdb.models['Model-1'].parts['siding'].datums[did])  # 创建参考平面,将用来切割模型
+        pzid = pz.id  # 参考平面的id号
+        try:
+            mdb.models['Model-1'].parts['siding'].PartitionCellByDatumPlane(
+            cells=mdb.models['Model-1'].parts['siding'].cells[:],
+            datumPlane=mdb.models['Model-1'].parts['siding'].datums[pzid])
+        except:
+            continue
+mdb.save()
 
 #create material
 session.viewports['Viewport: 1'].partDisplay.setValues(sectionAssignments=ON,
@@ -146,20 +166,26 @@ p = mdb.models['Model-1'].parts['siding']
 a.Instance(name='siding-1', part=p, dependent=ON)
 session.viewports['Viewport: 1'].assemblyDisplay.setValues(
     adaptiveMeshConstraints=ON)
-
-# create six datum points
-pt1 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-300.5, -1, 100.5))
-pt2 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(300.5, -1, 100.5))
-pt3 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-300.5,-1, 290.5))
-pt4 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(300.5, -1, 290.5))
-pt5 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(1.5, 28, 190.5))
-pt6 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(coords=(-1.5,28, 210.5)) # 以坐标的方式创建参考点们
-
+'''
+for i in range(100):
+    randpt1 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(
+        coords=(pt1.xValue + random.uniform(-3, 3), pt1.yValue + random.uniform(-3, 3), pt1.zValue + random.uniform(-3, 3)))
+    randpt2 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(
+        coords=(pt2.xValue + random.uniform(-3, 3), pt2.yValue + random.uniform(-3, 3), pt2.zValue + random.uniform(-3, 3)))
+    randpt3 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(
+        coords=(pt3.xValue + random.uniform(-3, 3), pt3.yValue + random.uniform(-3, 3), pt3.zValue + random.uniform(-3, 3)))
+    randpt4 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(
+        coords=(pt4.xValue + random.uniform(-3, 3), pt4.yValue + random.uniform(-3, 3), pt4.zValue + random.uniform(-3, 3)))
+    randpt5 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(
+        coords=(pt5.xValue + random.uniform(-3, 3), pt5.yValue + random.uniform(-3, 3), pt5.zValue + random.uniform(-3, 3)))
+    randpt6 = mdb.models['Model-1'].parts['siding'].DatumPointByCoordinate(
+        coords=(pt6.xValue + random.uniform(-3, 3), pt6.yValue + random.uniform(-3, 3), pt6.zValue + random.uniform(-3, 3)))
+    
+'''
 #select the point origin
-
 a = mdb.models['Model-1'].rootAssembly
 v = a.instances['siding-1'].vertices
-verts1 = v.getByBoundingBox(xMin=pt1.xValue-3, yMin=pt1.yValue-3, zMin=pt1.zValue-3, xMax=pt1.xValue+3, yMax=pt1.yValue+3, zMax=pt1.zValue+3)
+verts1 = v.getByBoundingBox(xMin=pt1.xValue-6, yMin=pt1.yValue-6, zMin=pt1.zValue-6, xMax=pt1.xValue+6, yMax=pt1.yValue+6, zMax=pt1.zValue+6)
 mindist1 = 1000000
 for i in range(len(verts1)):
     dist = math.sqrt((verts1[i].pointOn[0][0] - pt1.xValue) ** 2 + (verts1[i].pointOn[0][1] - pt1.yValue) ** 2 + (verts1[i].pointOn[0][2] - pt1.zValue) ** 2)
@@ -170,7 +196,7 @@ print(verts1[index1].pointOn)
 findpt1 = v.findAt(verts1[index1].pointOn)
 point1set = a.Set(vertices=findpt1, name='Set-1')
 
-verts2 = v.getByBoundingBox(xMin=pt2.xValue-3, yMin=pt2.yValue-3, zMin=pt2.zValue-3, xMax=pt2.xValue+3, yMax=pt2.yValue+3, zMax=pt2.zValue+3)
+verts2 = v.getByBoundingBox(xMin=pt2.xValue-6, yMin=pt2.yValue-6, zMin=pt2.zValue-6, xMax=pt2.xValue+6, yMax=pt2.yValue+6, zMax=pt2.zValue+6)
 mindist2 = 1000000
 for i in range(len(verts2)):
     dist = math.sqrt((verts2[i].pointOn[0][0] - pt2.xValue) ** 2 + (verts2[i].pointOn[0][1] - pt2.yValue) ** 2 + (verts2[i].pointOn[0][2] - pt2.zValue) ** 2)
@@ -181,7 +207,7 @@ print(verts2[index2].pointOn)
 findpt2 = v.findAt(verts2[index2].pointOn)
 point2set = a.Set(vertices=findpt2, name='Set-2')
 
-verts3 = v.getByBoundingBox(xMin=pt3.xValue-3, yMin=pt3.yValue-3, zMin=pt3.zValue-3, xMax=pt3.xValue+3, yMax=pt3.yValue+3, zMax=pt3.zValue+3)
+verts3 = v.getByBoundingBox(xMin=pt3.xValue-6, yMin=pt3.yValue-6, zMin=pt3.zValue-6, xMax=pt3.xValue+6, yMax=pt3.yValue+6, zMax=pt3.zValue+6)
 mindist3 = 1000000
 for i in range(len(verts3)):
     dist = math.sqrt((verts3[i].pointOn[0][0] - pt3.xValue) ** 2 + (verts3[i].pointOn[0][1] - pt3.yValue) ** 2 + (verts3[i].pointOn[0][2] - pt3.zValue) ** 2)
@@ -192,7 +218,7 @@ print(verts3[index3].pointOn)
 findpt3 = v.findAt(verts3[index3].pointOn)
 point3set = a.Set(vertices=findpt3, name='Set-3')
 
-verts4 = v.getByBoundingBox(xMin=pt4.xValue-3, yMin=pt4.yValue-3, zMin=pt4.zValue-3, xMax=pt4.xValue+3, yMax=pt4.yValue+3, zMax=pt4.zValue+3)
+verts4 = v.getByBoundingBox(xMin=pt4.xValue-6, yMin=pt4.yValue-6, zMin=pt4.zValue-6, xMax=pt4.xValue+6, yMax=pt4.yValue+6, zMax=pt4.zValue+6)
 mindist4 = 1000000
 for i in range(len(verts4)):
     dist = math.sqrt((verts4[i].pointOn[0][0] - pt4.xValue) ** 2 + (verts4[i].pointOn[0][1] - pt4.yValue) ** 2 + (verts4[i].pointOn[0][2] - pt4.zValue) ** 2)
@@ -203,7 +229,7 @@ print(verts4[index4].pointOn)
 findpt4 = v.findAt(verts4[index4].pointOn)
 point4set = a.Set(vertices=findpt4, name='Set-4')
 
-verts5 = v.getByBoundingBox(xMin=pt5.xValue-3, yMin=pt5.yValue-3, zMin=pt5.zValue-3, xMax=pt5.xValue+3, yMax=pt5.yValue+3, zMax=pt5.zValue+3)
+verts5 = v.getByBoundingBox(xMin=pt5.xValue-6, yMin=pt5.yValue-6, zMin=pt5.zValue-6, xMax=pt5.xValue+6, yMax=pt5.yValue+6, zMax=pt5.zValue+6)
 mindist5 = 1000000
 for i in range(len(verts5)):
     dist = math.sqrt((verts5[i].pointOn[0][0] - pt5.xValue) ** 2 + (verts5[i].pointOn[0][1] - pt5.yValue) ** 2 + (verts5[i].pointOn[0][2] - pt5.zValue) ** 2)
@@ -214,7 +240,7 @@ print(verts5[index5].pointOn)
 findpt5 = v.findAt(verts5[index5].pointOn)
 point5set = a.Set(vertices=findpt5, name='Set-5')
 
-verts6 = v.getByBoundingBox(xMin=pt6.xValue-3, yMin=pt6.yValue-3, zMin=pt6.zValue-3, xMax=pt6.xValue+3, yMax=pt6.yValue+3, zMax=pt6.zValue+3)
+verts6 = v.getByBoundingBox(xMin=pt6.xValue-6, yMin=pt6.yValue-6, zMin=pt6.zValue-6, xMax=pt6.xValue+6, yMax=pt6.yValue+6, zMax=pt6.zValue+6)
 mindist6 = 1000000
 for i in range(len(verts6)):
     dist = math.sqrt((verts6[i].pointOn[0][0] - pt6.xValue) ** 2 + (verts6[i].pointOn[0][1] - pt6.yValue) ** 2 + (verts6[i].pointOn[0][2] - pt6.zValue) ** 2)
